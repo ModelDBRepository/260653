@@ -1,0 +1,149 @@
+
+{load_file("util.hoc")}
+
+rangingResolution = 0.5  // calc threshold to within this value
+
+
+/////////////////////////////////////////////////////////////////////
+// HPC compatible work block
+
+// contexts
+objref pc
+pc = new ParallelContext()
+
+// Check for threshold value at the given location, using only the stimulus
+// amplitude range specified. Parameters: xPos, yPos, min_stim_amp, max_stim_amp.
+// Return: latency.
+func findThresholdInRange() { local xPos, yPos, aMin, aMax, latency
+    xPos = $1
+    yPos = $2
+    aMin = $3
+    aMax = $4
+    setelec(xPos, yPos, stimZ)
+
+    while (aMax - aMin > rangingResolution) {
+        stimAmp = (aMax+aMin)/2 * -0.001
+        setstim(stimDel, stimDur, stimAmp)
+        
+        run()
+        latency = uHasSpike()
+        // print "> ", stimAmp, " ", latency
+        if (latency < 0) {
+            return latency            //excessive stim
+        } else if (latency > 0) {
+            aMax = (aMax+aMin)/2      //over-stim
+        } else {
+            aMin = (aMax+aMin)/2      //under-stim
+        }
+    }
+    if (latency == 0) {
+        // re-run if last did not spike
+        stimAmp = aMax * -0.001
+        setstim(stimDel, stimDur, stimAmp)
+        run()
+        latency = uHasSpike()
+    }
+    return latency
+}
+
+// Find threshold for this location. Over-stim could cause hyperpolarization. This
+// is checked by spike detection and handled by halfing the stimulus amplitude, and
+// retrying the threshold ranging process, for up to maximum of 3 times. 
+// Parameters: x-pos, y-pos
+objref aFile
+proc findThreshold() { local id, xPos, yPos, overStimLoop, latency
+    xPos = $1
+    yPos = $2
+    aMax = STIM_AMP_MAX
+    aMin = STIM_AMP_MIN
+    overStimLoop = 0
+    while (overStimLoop < 3) {
+        latency = findThresholdInRange(xPos, yPos, aMin, aMax)
+        if (latency >= 0) {
+            break
+        }
+        aMax = aMax / 2
+        overStimLoop += 1
+    }
+    
+    printf("%d %d %.5f %.5f\n", xPos, yPos, stimAmp, latency*dt - stimDel)
+    if (pc.nhost == 1) {
+        aFile.printf("%d %d %.5f %.5f\n", xPos, yPos, stimAmp, latency*dt - stimDel)
+        aFile.flush()
+    } else {
+        id = hoc_ac_
+        pc.post(id, xPos, yPos, stimAmp, latency*dt-stimDel)
+    }
+}
+
+// Map threshold for the given region. Axes increases to the right and top, in 
+// increments of 10. Parameters: xMin xMax yMin yMax. 
+proc runRegion() { local id, xpos, ypos, amp, lat
+    if (pc.nhost == 1) {
+        // sequential execution
+        for aX = $1,$2 {
+            for aY = $3,$4 {
+                findThreshold(aX * 10, aY * 10)
+            }
+        }
+    } else {
+        // parallel execution
+        printf("INFO: ParallelContext.host = %d\n", pc.nhost)
+        pc.runworker()
+        for aX = $1,$2 {
+            for aY = $3,$4 {
+                pc.submit("findThreshold", aX * 10, aY * 10)
+            }
+        }
+        while ((id = pc.working) != 0) {
+            pc.take(id, &xpos, &ypos, &amp, &lat)
+            aFile.printf("%d %d %.5f %.5f\n", xpos, ypos, amp, lat)
+            aFile.flush()
+        }
+        pc.done
+    }
+}
+
+
+/////////////////////////////////////////////////////////////////////
+// User driven procedures
+
+// Initialization for the auto threshold mapping module
+proc atmInit() {
+    uRecord(&$&1)
+}
+
+// Start simulation and go through the entire specified region. Argument specifies
+// location for saving outputs
+proc atmStart() {
+    aFile = new File()
+
+    aFile.wopen($s1)
+    runRegion(AREA_XMIN, AREA_XMAX, AREA_YMIN, AREA_YMAX)
+
+    aFile.close()
+}
+
+// Display graphical representation of the stimulated region
+objref aS
+proc atmShowRegion() {
+    aS = new Shape(0)
+    aS.view(AREA_XMIN * 10, AREA_YMIN * 10, \
+        (AREA_XMAX - AREA_XMIN + 1) * 10, (AREA_YMAX - AREA_YMIN + 1) * 10, \
+        350, 30, \
+        (AREA_XMAX - AREA_XMIN + 1)*10, (AREA_YMAX - AREA_YMIN + 1)*10)
+
+    aS.mark(AREA_XMIN * 10, AREA_YMIN * 10, "+", 1, 2, 1)
+    aS.mark(AREA_XMAX * 10, AREA_YMAX * 10, "+", 1, 2, 1)
+}
+
+
+/////////////////////////////////////////////////////////////////////
+// Initialization
+
+tstop = 50
+if (GLOBAL_HAS_GUI) {
+    tstop_changed()
+}
+print "INFO: Start execution with atmStart() or atmShowRegion()\n"
+

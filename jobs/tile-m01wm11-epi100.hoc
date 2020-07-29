@@ -1,0 +1,20 @@
+// Note: run these from the root model directory
+
+
+{load_file("init-tile-m01wm11.hoc")}
+
+elecRad = 100                 // electrode radius (um)
+stimZ = -40                   // um
+setelec(stimX, stimY, stimZ)
+
+STIM_AMP_MIN = 0              // uA
+STIM_AMP_MAX = 200            // uA
+AREA_XMIN = 16                // *10 um
+AREA_XMAX = 26                // *10 um
+AREA_YMIN = -7                // *10 um
+AREA_YMAX = 4                 // *10 um
+{load_file("autoTileThresholdMap.hoc")}
+
+atmInitOnCells(on, onCells)
+atmStart("./output/tile-m01wm11-epi100.txt")
+

@@ -1,0 +1,14 @@
+
+{load_file("init-rgc-121821.hoc")}
+{load_file("./biophys/biophys.hoc")}
+
+bInit()
+
+bRun(0.000, "121821")
+bRun(0.010, "121821")
+bRun(0.020, "121821")
+bRun(0.040, "121821")
+bRun(0.060, "121821")
+
+quit()
+

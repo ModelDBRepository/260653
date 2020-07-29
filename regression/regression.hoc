@@ -1,0 +1,39 @@
+
+{load_file("../util.hoc")}
+
+
+proc rInit() {
+    // global set up
+    uRecord(&cell.soma.v(0.5))
+    tstop = 50
+    tstop_changed()
+    stimZ = -40
+    stimDel = 10
+    stimDur = 0.1
+}
+
+proc rRunCurrentSettings() {
+    // update GUI
+    setelec(stimX, stimY, stimZ)
+    setstim(stimDel, stimDur, stimAmp)
+    // run model 
+    run()
+}
+
+func rCalcThreshold() { //arg: elecRad, stimX, stimY, stimAmp
+    elecRad = $1
+    stimX = $2
+    stimY = $3
+    stimAmp = $4
+    rRunCurrentSettings()
+    while (uHasSpike() == 0) {
+        stimAmp -= 0.0001
+        rRunCurrentSettings()
+    }
+    return stimAmp
+}
+
+func rMean() {
+    return ($1 + $2 + $3) / 3.0
+}
+

@@ -1,0 +1,20 @@
+// Note: run these from the root model directory
+
+
+{load_file("init-rgc-ctt3219m.hoc")}
+
+elecRad = 10                  // electrode radius (um)
+stimZ = -40                   // um
+setelec(stimX, stimY, stimZ)
+
+STIM_AMP_MIN = 0              // uA
+STIM_AMP_MAX = 15             // uA
+AREA_XMIN = -16               // *10 um
+AREA_XMAX = 15                // *10 um
+AREA_YMIN = -16               // *10 um
+AREA_YMAX = 15                // *10 um
+{load_file("autoThresholdMap.hoc")}
+
+atmInit(&soma.v(0.5))
+atmStart("./output/rgc-ctt3219m-epi.txt")
+

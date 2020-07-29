@@ -1,0 +1,34 @@
+// Threshold regression test for the specified RGC. The mean threshold for 3 points
+// along the AIS, using 3 different electrode diameters, should be within SEM 
+// values reported by Sekirnjak06, under similar:
+//     1. cell dendritic diameter
+//     2. electrode diameter
+//     3. pulse width
+//
+// Run these from the root directory, e.g. nrngui ./regression/rgc-121821.hoc
+
+
+{load_file("init-rgc-121821.hoc")}
+{load_file("./regression/regression.hoc")}
+
+rInit()
+
+proc calcMeanThreshold() { local elecRad, stimAmp
+    elecRad = $1
+    stimAmp = $2
+    rTh1 = rCalcThreshold(elecRad, 30, 37, stimAmp)
+    rTh2 = rCalcThreshold(elecRad, 48, 50, stimAmp)
+    rTh3 = rCalcThreshold(elecRad, 64, 64, stimAmp)
+    print "elecRad(um) = ", elecRad, "mean(uA) = ", rMean(rTh1, rTh2, rTh3)
+}
+
+
+/////////////////////////////////////////////////////////////////////
+
+// test a range of electrode dimensions
+calcMeanThreshold(5, -0.0004)
+calcMeanThreshold(7, -0.0007)
+calcMeanThreshold(10, -0.0009)
+calcMeanThreshold(12, -0.0012)
+print "CHECK: 5um = ~0.6uA 10um = ~1.1uA 12um = 1.3uA (Sekrinjak06)"
+

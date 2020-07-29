@@ -1,0 +1,21 @@
+// Note: run these from the root model directory
+
+
+{load_file("init-rgc-121203.hoc")}
+
+elecRad = 100                 // electrode radius (um)
+stimZ = -40                   // um
+setelec(stimX, stimY, stimZ)
+
+STIM_AMP_MIN = 0              // uA
+STIM_AMP_MAX = 510            // uA
+AREA_XMIN = 20                // *10 um
+AREA_XMAX = 60                // *10 um
+AREA_YMIN = 15                // *10 um
+AREA_YMAX = 35                // *10 um
+{load_file("autoThresholdMap.hoc")}
+
+atmInit(&cell.soma.v(0.5))
+atmStart("./output/axonLen-epi100.txt")
+print "CHECK: Axon threshold should be lowest and smooth throughout."
+

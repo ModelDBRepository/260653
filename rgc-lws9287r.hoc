@@ -1,0 +1,117 @@
+
+/////////////////////////////////////////////////////////////////////
+// section name and topology
+
+{load_file("rgc-lws9287r.asc")}
+
+objref dendrites
+dendrites = new SectionList()
+dend1 dendrites.append()
+dend2 dendrites.append()
+dend3 dendrites.append()
+
+forall {
+    //ensure odd nseg count
+    if (nseg % 2 == 0) {
+        nseg += 1
+    }
+}
+soma {
+    diam = 11.6639  //hard spec
+    nseg = 5
+}
+ah[0] {
+    diam = 3  //hard spec
+    nseg = 15
+}
+
+
+/////////////////////////////////////////////////////////////////////
+// additional geometry for ais narrowr axon
+
+create ais, narrowr, axon
+ais {
+    diam = 0.8
+    L = 40
+    nseg = 15
+}
+narrowr {
+    diam = 0.8
+    L = 90
+    nseg = 15
+}
+axon {
+    diam = 1
+    L = 5300
+    nseg = int(L/7)
+}
+
+connect ais(0), ah[0](1)
+connect narrowr(0), ais(1)
+connect axon(0), narrowr(1)
+define_shape()
+
+
+/////////////////////////////////////////////////////////////////////
+// biophysics
+
+forall insert pas
+forall insert spike
+forall ena = 35.0
+forall ek = -75
+forall insert cad
+forall g_pas = 0.000005
+forall e_pas = -62.5
+forall Ra=110
+
+forsec dendrites {
+    gnabar_spike = 0.025
+    gkbar_spike  = 0.012
+    gabar_spike  = 0.036
+    gcabar_spike = 0.002
+    gkcbar_spike = 0.000001
+}
+
+soma {
+    gnabar_spike = 0.070
+    gkbar_spike  = 0.018
+    gabar_spike  = 0.054
+    gcabar_spike = 0.0015
+    gkcbar_spike = 0.000065
+}
+
+ah[0] {
+    gnabar_spike = 0.070
+    gkbar_spike  = 0.018
+    gabar_spike  = 0.054
+    gcabar_spike = 0.0015
+    gkcbar_spike = 0.000065
+}
+
+ais {
+    gnabar_spike = 1.050  // x3 Jeng11 baseline
+    gkbar_spike  = 0.027  // x3 Jeng11 baseline
+    gabar_spike  = 0.054
+    gcabar_spike = 0.0015
+    gkcbar_spike = 0.000065
+}
+
+narrowr {
+    gnabar_spike = 0.100
+    gkbar_spike  = 0.018
+    gabar_spike  = 0.054
+    gcabar_spike = 0.0015
+    gkcbar_spike = 0.000065
+}
+
+axon {
+    gnabar_spike = 0.070
+    gkbar_spike  = 0.018
+    gabar_spike  = 0
+    gcabar_spike = 0
+    gkcbar_spike = 0.000065
+}
+
+access soma
+forall depth_cad = diam / 2
+

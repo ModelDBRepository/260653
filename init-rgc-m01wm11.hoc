@@ -1,0 +1,33 @@
+
+{load_file("rgc-m01wm11.hoc")}
+{load_file("global.hoc")}
+
+objref cell
+cell = new RGCM01WM11()
+
+//user interface
+{load_file("gui.hoc")}
+FIELD_LEFT   = -100
+FIELD_BOTTOM = -40
+FIELD_WIDTH  = 160
+FIELD_HEIGHT = 160
+// showCell(FIELD_LEFT, FIELD_BOTTOM, FIELD_WIDTH, FIELD_HEIGHT)
+guiGraph.addvar("cell.soma.v(0.5)", 2, 1)
+guiGraph.addvar("cell.ais.v(0.5)", 3, 1)
+guiGraph.addvar("cell.axon.v(0.99)", 4, 1)
+
+// instrumentation
+{load_file("instr.hoc")}
+
+// procedures for publication
+proc pubfig() { local FIELD_LEFT, FIELD_BOTTOM, FIELD_WIDTH, FIELD_HEIGHT
+    FIELD_LEFT   = -20
+    FIELD_BOTTOM = -50
+    FIELD_WIDTH  = 80
+    FIELD_HEIGHT = 80
+    showCell(FIELD_LEFT, FIELD_BOTTOM, FIELD_WIDTH, FIELD_HEIGHT)
+    morph.printfile("skeleton-midget-top.ps")
+    morph.rotate(0,0,0, PI/2*1.01,0,0)
+    morph.printfile("skeleton-midget-side.ps")
+}
+

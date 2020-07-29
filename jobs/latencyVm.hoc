@@ -1,0 +1,67 @@
+
+{load_file("init-rgc-121203.hoc")}
+{load_file("util.hoc")}
+
+
+/////////////////////////////////////////////////////////////////////
+
+proc runPosition() {
+    stimX = $1
+    stimY = $2
+    stimAmp = $3
+    setelec(stimX, stimY, stimZ)
+    setstim(stimDel, stimDur, stimAmp)
+    run()
+    saveData($s4)
+}
+
+// Record data for the three specified variable
+objref uDv[3]
+proc uRecord() {
+    uDv[0] = new Vector()
+    uDv[0].record(&$&1)
+    uDv[1] = new Vector()
+    uDv[1].record(&$&2)
+    uDv[2] = new Vector()
+    uDv[2].record(&$&3)
+}
+
+// save the recorded data (in memory) to specified file, e.g. uSave("file.txt")
+strdef fName
+objref uFobj
+proc saveData() { 
+    uFobj = new File()
+
+    sprint(fName, "%s_ais.txt", $s1)
+    uFobj.wopen(fName)  //1st
+    uDv[0].printf(uFobj, "%f\n")
+    uFobj.close()
+
+    sprint(fName, "%s_soma.txt", $s1)
+    uFobj.wopen(fName)  //2nd
+    uDv[1].printf(uFobj, "%f\n")
+    uFobj.close()
+    
+    sprint(fName, "%s_dend.txt", $s1)
+    uFobj.wopen(fName)  //3rd
+    uDv[2].printf(uFobj, "%f\n")
+    uFobj.close()
+}
+
+
+/////////////////////////////////////////////////////////////////////
+
+// also plot Vm of the distal dendrite we are recording
+guiGraph.addvar("cell.dend[63].v(0.9)", 5, 1)
+
+elecRad = 10  // electrode radius (um)
+stimZ = -40   // um
+tstop = 50
+tstop_changed()
+uRecord(&cell.ais.v(0.5), &cell.soma.v(0.5), &cell.dend[63].v(0.9))
+
+runPosition(10, 60, -0.00516, "./output/latencyVm_10_60")
+runPosition(0, 0, -0.00516, "./output/latencyVm_0_0")
+runPosition(110, -40, -0.02672, "./output/latencyVm_110_-40")
+runPosition(20, -90, -0.01406, "./output/latencyVm_20_-90")
+

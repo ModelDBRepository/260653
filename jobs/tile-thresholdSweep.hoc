@@ -1,0 +1,41 @@
+{load_file("init-tile-off.hoc")}
+
+elecRad = 10                  // electrode radius (um)
+stimZ = -40                   // um
+setelec(stimX, stimY, stimZ)
+
+{load_file("autoTileThresholdMap.hoc")}
+
+atmInitOffCells()
+
+
+/////////////////////////////////////////////////////////////////////
+
+proc runSettings() {
+    stimX = $1
+    stimY = $2
+    stimAmp = $3
+    multiplier = $4
+    setelec(stimX, stimY, stimZ)
+    setstim(stimDel, stimDur, stimAmp*multiplier)
+    run()
+    print stimAmp*multiplier, countActivity()
+}
+
+
+/////////////////////////////////////////////////////////////////////
+
+print "% low threshold point (stimAmp activeCells)"
+runSettings(550, -60, -0.00105, 1.0)
+runSettings(550, -60, -0.00105, 1.5)
+runSettings(550, -60, -0.00105, 2.0)
+runSettings(550, -60, -0.00105, 2.5)
+runSettings(550, -60, -0.00105, 3.0)
+
+print "% high threshold point (stimAmp activeCells)"
+runSettings(550, -120, -0.00457, 1.0)
+runSettings(550, -120, -0.00457, 1.5)
+runSettings(550, -120, -0.00457, 2.0)
+runSettings(550, -120, -0.00457, 2.5)
+runSettings(550, -120, -0.00457, 3.0)
+

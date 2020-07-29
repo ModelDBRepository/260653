@@ -1,0 +1,56 @@
+
+{load_file("init-rgc-121821.hoc")}
+{load_file("util.hoc")}
+objref shapePlot
+
+
+/////////////////////////////////////////////////////////////////////
+
+strdef fName
+proc runPosition() {
+    // parameters: stimX stimY stimAmp tstop filePrefix
+    stimX = $1
+    stimY = $2
+    stimAmp = $3
+    setelec(stimX, stimY, stimZ)
+    setstim(stimDel, stimDur, stimAmp)
+    
+    tstop = $4
+    tstop_changed()
+
+    run()
+    sprint(fName, "./output/latencyShape-100_%s_%.3f.ps", $s5, $4)
+    shapePlot.printfile(fName)
+}
+
+proc setPosition() { local time
+    if ($1 == 1) {
+        for case (&time, 10.025, 10.1, 10.3, 10.5 ) {
+            runPosition(10, 120, -0.6375, time, "10_120")
+        }
+    } else if ($1 == 2) {
+        for case (&time, 10.025, 10.1, 10.3, 10.5) {
+            runPosition(60, 60, -0.8915, time, "60_60")
+        }
+    }
+}
+
+
+/////////////////////////////////////////////////////////////////////
+
+elecRad = 100 // electrode radius (um)
+stimZ = -40   // um
+
+screen_update_invl = 0.025
+tstop = 50
+tstop_changed()
+
+shapePlot = new PlotShape(0)
+shapePlot.variable("v")
+shapePlot.view(-110, -100, 220, 220, 400, 450, 200, 200)
+shapePlot.exec_menu("Shape Plot")
+fast_flush_list.append(shapePlot)
+{doNotify()}
+
+print "INFO: set stim position with setPosition(1~2)"
+

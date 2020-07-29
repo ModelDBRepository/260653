@@ -1,0 +1,50 @@
+
+{load_file("rgc-121203.hoc")}
+
+// normal distribution jitter for somatic location
+objref rand
+rand = new Random()
+rand.normal(0, 25)
+
+// deterministic grid positions
+// DX = 70
+// DY = -140
+// CX = 120
+// CY = 50
+DX = 90
+DY = -140
+CX = 120
+CY = 50
+offCells = 0
+
+// construct tile of cells
+objref off[24]
+proc placeCell() { local col, row
+    col = $1
+    row = $2
+    xjit = rand.repick()
+    yjit = rand.repick()
+    off[offCells] = new RGC121203(CX*col + DX*row + xjit, CY*col + DY*row + yjit, 0)
+    // print offCells, CX*col + DX*row + xjit, CY*col + DY*row + yjit
+    offCells += 1
+}
+
+proc createOffTile() {
+    for col = 0,5 {
+        rand.repick()
+        for row = 0,3 {
+            if (col == 0 && row == 0) {
+                // drop 1st of col 0
+            } else if (col == 0 && row == 3) {
+                // drop last of col 0
+            } else if ((col == 4 || col == 5) && row == 0) {
+                // drop 1st of col 4, 5 and 6
+            } else if (col == 5 && row == 3) {
+                // drop last of col 6
+            } else {
+                placeCell(col, row)
+            }
+        }
+    }
+}
+

@@ -1,0 +1,36 @@
+{load_file("init-tile.hoc")}
+{load_file("tile-on.hoc")}
+{load_file("global.hoc")}
+
+tile_on_monteCarloJitter = 1  // uniform disttribution jitter of cell location
+monteCarlo = new Random()
+
+proc createTileVariation() {
+    if ($1 == 0 || $1 == 1) {
+        monteCarlo.uniform(-5, 5)
+    } else {
+        monteCarlo.normal(0, 25)
+    }
+
+    // cycle through the pseudo-random sequence for other variations. This prevents
+    // shifted copy of the sequence, which would result in auto-correlation with
+    // period of 1/ncells.
+    for i = 0,$1 {
+        tile_on_noCreate = 1  // will not create any cell
+        createOnTile()
+    }
+    
+    // create cell mosaic
+    tile_on_noCreate = 0
+    createOnTile()
+    access on[0].soma
+
+    // visualization 
+    {load_file("gui.hoc")}
+    FIELD_LEFT   = -50
+    FIELD_BOTTOM = -600
+    FIELD_WIDTH  = 1100
+    FIELD_HEIGHT = 1100
+}
+
+

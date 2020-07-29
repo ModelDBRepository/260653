@@ -1,0 +1,23 @@
+
+{load_file("init-tile.hoc")}
+{load_file("tile-m01wm11.hoc")}
+{load_file("global.hoc")}
+access on[0].soma
+
+// visualization 
+{load_file("gui.hoc")}
+FIELD_LEFT   = 130
+FIELD_BOTTOM = -150
+FIELD_WIDTH  = 320
+FIELD_HEIGHT = 320
+// showCell(FIELD_LEFT, FIELD_BOTTOM, FIELD_WIDTH, FIELD_HEIGHT)
+guiGraph.addvar("on[0].soma.v(0.5)", 2, 1)
+guiGraph.addvar("on[1].soma.v(0.5)", 3, 1)
+guiGraph.addvar("on[2].soma.v(0.5)", 4, 1)
+guiGraph.addvar("on[3].soma.v(0.5)", 5, 1)
+guiGraph.addvar("on[4].soma.v(0.5)", 6, 1)
+guiGraph.addvar("on[5].soma.v(0.5)", 7, 1)
+
+// simulation
+{load_file("instr.hoc")}
+

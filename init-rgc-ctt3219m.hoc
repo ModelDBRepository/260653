@@ -1,0 +1,18 @@
+
+{load_file("rgc-ctt3219m.hoc")}
+{load_file("global.hoc")}
+
+//user interface
+load_file("gui.hoc")
+FIELD_LEFT   = -100
+FIELD_BOTTOM = -100
+FIELD_WIDTH  = 300
+FIELD_HEIGHT = 200
+// showCell(FIELD_LEFT, FIELD_BOTTOM, FIELD_WIDTH, FIELD_HEIGHT)
+guiGraph.addvar("soma.v(0.5)", 2, 1)
+guiGraph.addvar("ais.v(0.5)", 3, 1)
+guiGraph.addvar("axon.v(0.99)", 4, 1)
+
+// instrumentation
+{load_file("instr.hoc")}
+

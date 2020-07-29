@@ -1,0 +1,5 @@
+
+// name forward declarations for autoTileThresholdMap, over-ridden as necessary
+objref off[1]
+objref on[1]
+

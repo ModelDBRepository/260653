@@ -1,0 +1,65 @@
+
+{load_file("rgc-121821.hoc")}
+
+// global settings
+tile_on_noCreate         = 0
+tile_on_monteCarloJitter = 0
+
+// normal distribution jitter for somatic location
+objref rand
+rand = new Random()
+rand.normal(0, 25)
+
+// distribution for Monte Carlo simulation
+objref monteCarlo
+
+// deterministic grid positions
+DX = 90
+DY = -140
+CX = 117  //120
+CY = 53   //50
+onCells = 0
+
+// construct tile of cells
+objref on[24]
+proc placeCell() { local col, row
+    col = $1
+    row = $2
+
+    if (tile_on_monteCarloJitter) {
+        xjit = monteCarlo.repick()
+        yjit = monteCarlo.repick()
+    } else {
+        xjit = 0
+        yjit = 0
+    }
+    if (tile_on_noCreate) {
+        return  //skip cell creation, only consume random number sequence
+    }
+
+    xjit += rand.repick()
+    yjit += rand.repick()
+    on[onCells] = new RGC121821(CX*col + DX*row + xjit, CY*col + DY*row + yjit, 0)
+    // print onCells, CX*col + DX*row + xjit, CY*col + DY*row + yjit
+    onCells += 1
+}
+
+proc createOnTile() {
+    for col = 0,5 {
+        rand.repick()
+        for row = 0,3 {
+            if (col == 0 && row == 0) {
+                // drop 1st of col 0
+            } else if (col == 0 && row == 3) {
+                // drop last of col 0
+            } else if ((col == 4 || col == 5) && row == 0) {
+                // drop 1st of col 5 and 6
+            } else if (col == 5 && row == 3) {
+                // drop last of col 6
+            } else {
+                placeCell(col, row)
+            }
+        }
+    }
+}
+

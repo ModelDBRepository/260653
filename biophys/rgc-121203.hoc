@@ -1,0 +1,18 @@
+
+{load_file("init-rgc-121203.hoc")}
+{load_file("./biophys/biophys.hoc")}
+
+bInit()
+
+// start at very slightly depol position, normally -68.3
+v_init = -68.15
+stdinit()
+
+bRun(0.000, "121203")
+bRun(0.010, "121203")
+bRun(0.020, "121203")
+bRun(0.040, "121203")
+bRun(0.060, "121203")
+
+quit()
+

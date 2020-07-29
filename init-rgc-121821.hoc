@@ -1,0 +1,33 @@
+
+{load_file("rgc-121821.hoc")}
+{load_file("global.hoc")}
+
+objref cell
+cell = new RGC121821()
+
+//user interface
+{load_file("gui.hoc")}
+FIELD_LEFT   = -120
+FIELD_BOTTOM = -120
+FIELD_WIDTH  = 300
+FIELD_HEIGHT = 300
+// showCell(FIELD_LEFT, FIELD_BOTTOM, FIELD_WIDTH, FIELD_HEIGHT)
+guiGraph.addvar("cell.soma.v(0.5)", 2, 1)
+guiGraph.addvar("cell.ais.v(0.5)", 3, 1)
+guiGraph.addvar("cell.axon.v(0.99)", 4, 1)
+
+// instrumentation
+{load_file("instr.hoc")}
+
+// procedures for publication
+proc pubfig() { local FIELD_LEFT, FIELD_BOTTOM, FIELD_WIDTH, FIELD_HEIGHT
+    FIELD_LEFT   = -100
+    FIELD_BOTTOM = -100
+    FIELD_WIDTH  = 210
+    FIELD_HEIGHT = 210
+    showCell(FIELD_LEFT, FIELD_BOTTOM, FIELD_WIDTH, FIELD_HEIGHT)
+    morph.printfile("skeleton-on-top.ps")
+    morph.rotate(0,0,0, PI/2,0,0)
+    morph.printfile("skeleton-on-side.ps")
+}
+

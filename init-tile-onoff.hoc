@@ -1,0 +1,21 @@
+
+{load_file("tile-off.hoc")}
+{load_file("tile-on.hoc")}
+{load_file("global.hoc")}
+access on[0].soma
+
+// visualization 
+{load_file("gui.hoc")}
+FIELD_LEFT   = -50
+FIELD_BOTTOM = -600
+FIELD_WIDTH  = 1100
+FIELD_HEIGHT = 1100
+// showCell(FIELD_LEFT, FIELD_BOTTOM, FIELD_WIDTH, FIELD_HEIGHT)
+guiGraph.addvar("on[0].soma.v(0.5)", 2, 1)
+guiGraph.addvar("on[0].ais.v(0.5)", 3, 1)
+guiGraph.addvar("on[0].axon.v(0.99)", 4, 1)
+
+// simulation
+{load_file("instr.hoc")}
+
+
